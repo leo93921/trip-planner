@@ -5,7 +5,7 @@ import org.springframework.data.annotation.Id;
 import java.time.LocalTime;
 import java.util.List;
 
-public class TripStop {
+public class TripStopModel {
 
     @Id
     private String id;
@@ -13,7 +13,7 @@ public class TripStop {
     private String refId;
     private LocalTime visitTime;
     private Integer visitOrder;
-    private Location location;
+    private LocationModel location;
     private Boolean warningPresent;
     private List<String> warningMessages;
 
@@ -57,11 +57,11 @@ public class TripStop {
         this.visitOrder = visitOrder;
     }
 
-    public Location getLocation() {
+    public LocationModel getLocation() {
         return location;
     }
 
-    public void setLocation(Location location) {
+    public void setLocation(LocationModel location) {
         this.location = location;
     }
 

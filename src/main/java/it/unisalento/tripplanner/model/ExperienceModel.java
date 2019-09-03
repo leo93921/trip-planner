@@ -4,7 +4,7 @@ import org.springframework.data.annotation.Id;
 
 import java.util.Date;
 
-public abstract class Experience {
+public abstract class ExperienceModel {
 
     @Id
     private String id;
@@ -14,11 +14,11 @@ public abstract class Experience {
     private Date creationDate;
     private Date updateDate;
     private Date deleteDate;
-    private Location startPoint;
-    private Location endPoint;
+    private LocationModel startPoint;
+    private LocationModel endPoint;
     private String userId;
 
-    public Experience() {
+    public ExperienceModel() {
     }
 
     public String getId() {
@@ -77,19 +77,19 @@ public abstract class Experience {
         this.deleteDate = deleteDate;
     }
 
-    public Location getStartPoint() {
+    public LocationModel getStartPoint() {
         return startPoint;
     }
 
-    public void setStartPoint(Location startPoint) {
+    public void setStartPoint(LocationModel startPoint) {
         this.startPoint = startPoint;
     }
 
-    public Location getEndPoint() {
+    public LocationModel getEndPoint() {
         return endPoint;
     }
 
-    public void setEndPoint(Location endPoint) {
+    public void setEndPoint(LocationModel endPoint) {
         this.endPoint = endPoint;
     }
 

@@ -5,12 +5,12 @@ import org.springframework.data.annotation.Id;
 import java.util.Date;
 import java.util.List;
 
-public class DayBag {
+public class DayBagModel {
 
     @Id
     private String id;
     private Date day;
-    private List<TripStop> tripStops;
+    private List<TripStopModel> tripStops;
 
     public String getId() {
         return id;
@@ -28,11 +28,11 @@ public class DayBag {
         this.day = day;
     }
 
-    public List<TripStop> getTripStops() {
+    public List<TripStopModel> getTripStops() {
         return tripStops;
     }
 
-    public void setTripStops(List<TripStop> tripStops) {
+    public void setTripStops(List<TripStopModel> tripStops) {
         this.tripStops = tripStops;
     }
 

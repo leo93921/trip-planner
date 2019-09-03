@@ -2,16 +2,16 @@ package it.unisalento.tripplanner.model;
 
 import java.util.List;
 
-public class Itinerary extends Experience {
+public class ItineraryModel extends ExperienceModel {
 
-    private List<TripStop> stops;
+    private List<TripStopModel> stops;
     private String description;
 
-    public List<TripStop> getStops() {
+    public List<TripStopModel> getStops() {
         return stops;
     }
 
-    public void setStops(List<TripStop> stops) {
+    public void setStops(List<TripStopModel> stops) {
         this.stops = stops;
     }
 

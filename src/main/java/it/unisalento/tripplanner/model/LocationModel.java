@@ -1,11 +1,11 @@
 package it.unisalento.tripplanner.model;
 
-public class Location {
+public class LocationModel {
 
     private double longitude;
     private double latitude;
 
-    public Location() {
+    public LocationModel() {
     }
 
     public double getLongitude() {
