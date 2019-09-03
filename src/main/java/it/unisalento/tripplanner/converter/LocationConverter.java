@@ -10,7 +10,7 @@ public interface LocationConverter {
 
     LocationConverter INSTANCE = Mappers.getMapper( LocationConverter.class );
 
-    LocationModel locationToLocationModel(Location location);
-    Location locationModelToLocation(LocationModel locationModel);
+    LocationModel toModel(Location location);
+    Location toDto(LocationModel locationModel);
 
 }
