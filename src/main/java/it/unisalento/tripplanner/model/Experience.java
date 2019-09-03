@@ -1,4 +1,4 @@
-package it.unisalento.tripplanner.dao;
+package it.unisalento.tripplanner.model;
 
 import org.springframework.data.annotation.Id;
 
