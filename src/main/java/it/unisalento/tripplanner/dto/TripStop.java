@@ -6,7 +6,7 @@ import java.util.List;
 public class TripStop {
 
     private String id;
-    private Integer refType;
+    private RefType refType;
     private String refId;
     private LocalTime visitTime;
     private Integer visitOrder;
@@ -22,11 +22,11 @@ public class TripStop {
         this.id = id;
     }
 
-    public Integer getRefType() {
+    public RefType getRefType() {
         return refType;
     }
 
-    public void setRefType(Integer refType) {
+    public void setRefType(RefType refType) {
         this.refType = refType;
     }
 
