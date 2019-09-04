@@ -19,6 +19,7 @@ configurations {
 
 repositories {
 	mavenCentral()
+	jcenter()
 }
 
 apply plugin: 'net.ltgt.apt-idea'
@@ -26,12 +27,11 @@ apply plugin: 'net.ltgt.apt-idea'
 dependencies {
 	implementation "org.mapstruct:mapstruct:${mapstructVersion}"
 	annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
-
 	implementation 'org.springframework.boot:spring-boot-starter-jersey'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	compile("org.springframework.boot:spring-boot-starter-data-mongodb")
+	testCompile "org.mockito:mockito-core:2.+"
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-
 	testAnnotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
 }
