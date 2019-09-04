@@ -1,7 +1,10 @@
 package it.unisalento.tripplanner.model;
 
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.util.List;
 
+@Document(collection = "itinerary")
 public class ItineraryModel extends ExperienceModel {
 
     private List<TripStopModel> stops;
