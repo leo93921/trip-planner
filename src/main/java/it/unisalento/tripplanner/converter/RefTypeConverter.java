@@ -1,7 +1,9 @@
 package it.unisalento.tripplanner.converter;
 
 import it.unisalento.tripplanner.dto.RefType;
+import org.mapstruct.Mapper;
 
+@Mapper
 public class RefTypeConverter {
 
     public static RefType toDto(Integer code) {
