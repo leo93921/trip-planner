@@ -5,11 +5,9 @@ import it.unisalento.tripplanner.iservice.IItineraryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 
 @RestController
@@ -26,6 +24,14 @@ public class ItineraryRestController {
             @PathVariable("pageSize") Integer pageSize
     ) {
         return service.findAll(pageNumber, pageSize);
+    }
+
+    @Consumes(MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping
+    public Itinerary save(
+            @RequestBody Itinerary itinerary
+    ) {
+        return service.save(itinerary);
     }
 
 }

@@ -36,4 +36,16 @@ public class ItineraryService implements IItineraryService {
         // Build new page and return it
         return new PageImpl<>(itineraries, list.getPageable(), list.getTotalElements());
     }
+
+    /**
+     * Persist a new Itinerary
+     * @param itinerary DTO to be saved
+     * @return Saved DTO
+     */
+    @Override
+    public Itinerary save(Itinerary itinerary) {
+        ItineraryModel model = ItineraryConverter.INSTANCE.toModel(itinerary);
+        ItineraryModel saved = repository.save(model);
+        return ItineraryConverter.INSTANCE.toDto(saved);
+    }
 }

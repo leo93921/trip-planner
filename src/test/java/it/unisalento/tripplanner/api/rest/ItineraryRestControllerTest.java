@@ -1,21 +1,24 @@
 package it.unisalento.tripplanner.api.rest;
 
 import it.unisalento.tripplanner.dto.Itinerary;
+import it.unisalento.tripplanner.dto.RefType;
+import it.unisalento.tripplanner.dto.TripStop;
 import it.unisalento.tripplanner.iservice.IItineraryService;
+import it.unisalento.tripplanner.test.utils.TestUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +35,9 @@ public class ItineraryRestControllerTest {
 
     @InjectMocks
     ItineraryRestController controller;
+
+    @Captor
+    private ArgumentCaptor<Itinerary> capturedItineraries;
 
     private MockMvc mockMvc;
 
@@ -61,5 +67,46 @@ public class ItineraryRestControllerTest {
 
         verify(service, times(1)).findAll(0, 20);
         verifyNoMoreInteractions(service);
+    }
+
+    @Test
+    public void testSave() throws Exception {
+        Itinerary dto = new Itinerary();
+        dto.setDescription("_description");
+
+        List<TripStop> stops = new ArrayList<>();
+        TripStop stop = new TripStop();
+        stop.setId("_id");
+        stop.setRefId("ref_id");
+        stop.setRefType(RefType.TYPE_EVENT);
+        stop.setVisitOrder(2);
+        stop.setVisitTime(LocalTime.of(12, 42));
+        stop.setWarningPresent(true);
+        stop.setWarningMessages(List.of("w_m_1", "w_m_2"));
+        stops.add(stop);
+        dto.setStops(stops);
+
+        when(service.save(ArgumentMatchers.any(Itinerary.class))).thenReturn(dto);
+
+        Itinerary toSend = new Itinerary();
+        mockMvc.perform(post("/api/itinerary")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(TestUtils.toJson(toSend)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.description", is("_description")))
+                .andExpect(jsonPath("$.stops", hasSize(1)))
+                .andExpect(jsonPath("$.stops[0].id", is("_id")))
+                .andExpect(jsonPath("$.stops[0].refId", is("ref_id")))
+                .andExpect(jsonPath("$.stops[0].refType", is("TYPE_EVENT")))
+                .andExpect(jsonPath("$.stops[0].visitOrder", is(2)))
+                .andExpect(jsonPath("$.stops[0].warningPresent", is(true)))
+                .andExpect(jsonPath("$.stops[0].warningMessages", hasSize(2)))
+                .andExpect(jsonPath("$.stops[0].warningMessages[0]", is("w_m_1")))
+                .andExpect(jsonPath("$.stops[0].warningMessages[1]", is("w_m_2")))
+                .andExpect(jsonPath("$.stops[0].warningMessages[0]", is("w_m_1")));
+
+        verify(service, times(1)).save(capturedItineraries.capture());
+        verifyNoMoreInteractions(service);
+
     }
 }
