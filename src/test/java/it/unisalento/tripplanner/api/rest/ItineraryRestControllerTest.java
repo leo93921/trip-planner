@@ -3,6 +3,8 @@ package it.unisalento.tripplanner.api.rest;
 import it.unisalento.tripplanner.dto.Itinerary;
 import it.unisalento.tripplanner.dto.RefType;
 import it.unisalento.tripplanner.dto.TripStop;
+import it.unisalento.tripplanner.exception.ExceptionMessage;
+import it.unisalento.tripplanner.exception.ItineraryNotFoundException;
 import it.unisalento.tripplanner.iservice.IItineraryService;
 import it.unisalento.tripplanner.test.utils.TestUtils;
 import org.junit.Before;
@@ -41,7 +43,7 @@ public class ItineraryRestControllerTest {
     private MockMvc mockMvc;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
     }
 
@@ -106,6 +108,28 @@ public class ItineraryRestControllerTest {
 
         verify(service, times(1)).save(capturedItineraries.capture());
         verifyNoMoreInteractions(service);
-
     }
+
+    @Test
+    public void testDeleteOK() throws Exception {
+        when(service.deleteByID(anyString())).thenReturn(true);
+
+        mockMvc.perform(delete("/api/itinerary/{id}", "_id"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", is(true)));
+        verify(service, times(1)).deleteByID("_id");
+        verifyNoMoreInteractions(service);
+    }
+
+    @Test
+    public void testDelete404() throws Exception {
+        when(service.deleteByID(anyString())).thenThrow(ItineraryNotFoundException.class);
+
+        mockMvc.perform(delete("/api/itinerary/{id}", "_id"))
+                .andExpect(status().isNotFound());
+
+        verify(service, times(1)).deleteByID("_id");
+        verifyNoMoreInteractions(service);
+    }
+
 }

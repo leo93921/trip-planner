@@ -2,6 +2,7 @@ package it.unisalento.tripplanner.service;
 
 import it.unisalento.tripplanner.converter.ItineraryConverter;
 import it.unisalento.tripplanner.dto.Itinerary;
+import it.unisalento.tripplanner.exception.ItineraryNotFoundException;
 import it.unisalento.tripplanner.iservice.IItineraryService;
 import it.unisalento.tripplanner.model.ItineraryModel;
 import it.unisalento.tripplanner.repository.ItineraryRepository;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -42,10 +44,25 @@ public class ItineraryService implements IItineraryService {
      * @param itinerary DTO to be saved
      * @return Saved DTO
      */
-    @Override
+    @Override @Transactional
     public Itinerary save(Itinerary itinerary) {
         ItineraryModel model = ItineraryConverter.INSTANCE.toModel(itinerary);
         ItineraryModel saved = repository.save(model);
         return ItineraryConverter.INSTANCE.toDto(saved);
+    }
+
+
+    /**
+     * Delete an Itinerary by ID
+     * @param id The resource ID
+     * @return True if ok
+     * @throws ItineraryNotFoundException if the Itinerary with given ID doesn't exist
+     */
+    @Override @Transactional
+    public boolean deleteByID(String id) throws ItineraryNotFoundException {
+        Optional<ItineraryModel> optional = repository.findById(id);
+        ItineraryModel foundModel = optional.orElseThrow(ItineraryNotFoundException::new);
+        repository.delete(foundModel);
+        return true;
     }
 }

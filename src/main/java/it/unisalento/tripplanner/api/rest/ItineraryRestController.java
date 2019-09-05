@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.print.attribute.standard.Media;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 
@@ -32,6 +33,14 @@ public class ItineraryRestController {
             @RequestBody Itinerary itinerary
     ) {
         return service.save(itinerary);
+    }
+
+    @Produces(MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping("/{id}")
+    public boolean deleteItinerary(
+            @PathVariable("id") String id
+    ) {
+        return service.deleteByID(id);
     }
 
 }

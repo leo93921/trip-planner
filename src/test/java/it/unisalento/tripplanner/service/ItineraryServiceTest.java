@@ -1,6 +1,7 @@
 package it.unisalento.tripplanner.service;
 
 import it.unisalento.tripplanner.dto.Itinerary;
+import it.unisalento.tripplanner.exception.ItineraryNotFoundException;
 import it.unisalento.tripplanner.iservice.IItineraryService;
 import it.unisalento.tripplanner.model.ItineraryModel;
 import it.unisalento.tripplanner.repository.ItineraryRepository;
@@ -17,8 +18,11 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -43,5 +47,19 @@ public class ItineraryServiceTest {
         Page<Itinerary> page = service.findAll(0, 20);
         Assert.assertEquals(1, page.getTotalElements());
         Assert.assertEquals(1, page.getTotalPages());
+    }
+
+    @Test
+    public void deleteOK() {
+        doNothing().when(repository).delete(any());
+        when(repository.findById(anyString())).thenReturn(Optional.of(new ItineraryModel()));
+        boolean result = service.deleteByID("_id");
+        Assert.assertTrue(result);
+    }
+
+    @Test(expected = ItineraryNotFoundException.class)
+    public void deleteNotFound() {
+        when(repository.findById(anyString())).thenReturn(Optional.empty());
+        service.deleteByID("_id");
     }
 }

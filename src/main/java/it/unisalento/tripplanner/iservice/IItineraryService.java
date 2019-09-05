@@ -6,4 +6,5 @@ import org.springframework.data.domain.Page;
 public interface IItineraryService {
     Page<Itinerary> findAll(Integer page, Integer pageSize);
     Itinerary save(Itinerary itinerary);
+    boolean deleteByID(String id);
 }
