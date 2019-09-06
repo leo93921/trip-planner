@@ -72,7 +72,7 @@ public class ItineraryService implements IItineraryService {
      * @param itinerary The new itinerary
      * @return the saved Itinerary
      */
-    @Override
+    @Override @Transactional
     public Itinerary update(Itinerary itinerary) {
         Optional<ItineraryModel> model = repository.findById(itinerary.getId());
 
