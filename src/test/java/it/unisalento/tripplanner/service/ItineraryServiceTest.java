@@ -4,14 +4,15 @@ import it.unisalento.tripplanner.dto.Itinerary;
 import it.unisalento.tripplanner.exception.ItineraryNotFoundException;
 import it.unisalento.tripplanner.model.ItineraryModel;
 import it.unisalento.tripplanner.repository.ItineraryRepository;
+import it.unisalento.tripplanner.utils.PageBuilder;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
@@ -31,21 +32,41 @@ public class ItineraryServiceTest {
     private ItineraryRepository repository;
     @InjectMocks
     private ItineraryService service;
+    private PageBuilder<ItineraryModel> builder;
+
+    @Before
+    public void setUp() {
+        this.builder = new PageBuilder<>();
+
+        this.service = new ItineraryService(
+                new PageBuilder<>(),
+                repository
+        );
+    }
 
     @Test
     public void shouldFindAllItineraries() {
-        List<ItineraryModel> mockedList = new ArrayList<>();
-        ItineraryModel itinerary = new ItineraryModel();
-        itinerary.setId("_id");
-        itinerary.setDescription("_description");
-        mockedList.add(itinerary);
-        Page<ItineraryModel> p = new PageImpl<>(mockedList, PageRequest.of(0,20), 1);
+        Page<ItineraryModel> p = getItineraryPage();
 
         when(repository.findAll(any(Pageable.class))).thenReturn(p);
 
         Page<Itinerary> page = service.findAll(0, 20);
         Assert.assertEquals(1, page.getTotalElements());
         Assert.assertEquals(1, page.getTotalPages());
+    }
+
+    private Page<ItineraryModel> getItineraryPage() {
+        List<ItineraryModel> mockedList = new ArrayList<>();
+        ItineraryModel itinerary = new ItineraryModel();
+        itinerary.setId("_id");
+        itinerary.setDescription("_description");
+        mockedList.add(itinerary);
+
+        return builder
+                .setElements(mockedList)
+                .setPage(PageRequest.of(0,20))
+                .setTotalElements(1)
+                .build();
     }
 
     @Test
@@ -105,5 +126,18 @@ public class ItineraryServiceTest {
         when(repository.findById(anyString())).thenReturn(Optional.empty());
 
         service.findByID("_id");
+    }
+
+    @Test
+    public void shouldFindUserItineraries() {
+        //when(repository.findByUserId(anyString(), any())).thenReturn(getItineraryPage());
+        when(repository.findByUserId(any(), any())).thenReturn(getItineraryPage());
+
+        Page<Itinerary> page = service.findByUserID("userId", 0, 20);
+
+        Assert.assertNotNull(page);
+        Assert.assertEquals(1, page.getContent().size());
+        Assert.assertEquals("_id", page.getContent().get(0).getId());
+        Assert.assertEquals("_description", page.getContent().get(0).getDescription());
     }
 }

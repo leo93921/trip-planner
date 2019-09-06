@@ -9,4 +9,5 @@ public interface IItineraryService {
     boolean deleteByID(String id);
     Itinerary update(Itinerary itinerary);
     Itinerary findByID(String id);
+    Page<Itinerary> findByUserID(String userID, Integer pageNumber, Integer pageSize);
 }

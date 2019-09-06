@@ -6,6 +6,7 @@ import it.unisalento.tripplanner.exception.ItineraryNotFoundException;
 import it.unisalento.tripplanner.iservice.IItineraryService;
 import it.unisalento.tripplanner.model.ItineraryModel;
 import it.unisalento.tripplanner.repository.ItineraryRepository;
+import it.unisalento.tripplanner.utils.PageBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -22,8 +23,16 @@ import java.util.Optional;
 @Service
 public class ItineraryService implements IItineraryService {
 
-    @Autowired
     private ItineraryRepository repository;
+    private PageBuilder<Itinerary> builder;
+
+    public ItineraryService(
+            @Autowired PageBuilder<Itinerary> builder,
+            @Autowired ItineraryRepository repository
+    ) {
+        this.builder = builder;
+        this.repository = repository;
+    }
 
     @Override @Transactional(readOnly = true)
     public Page<Itinerary> findAll(Integer pageNumber, Integer pageSize) {
@@ -105,5 +114,28 @@ public class ItineraryService implements IItineraryService {
 
         saved = repository.save(saved);
         return ItineraryConverter.INSTANCE.toDto(saved);
+    }
+
+    /**
+     * Return page of itineraries for a given user
+     * @param userID ID of the user
+     * @param pageNumber Page number for pagination
+     * @param pageSize Page size for pagination
+     * @return Page of itineraries of a given user
+     */
+    @Override
+    public Page<Itinerary> findByUserID(String userID, Integer pageNumber, Integer pageSize) {
+        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
+        Page<ItineraryModel> userItineraries = repository.findByUserId(userID, pageRequest);
+
+        List<Itinerary> itineraries = new ArrayList<>();
+        for (ItineraryModel model : userItineraries)
+            itineraries.add(ItineraryConverter.INSTANCE.toDto(model));
+
+        return builder
+                .setElements(itineraries)
+                .setPage(userItineraries.getPageable())
+                .setTotalElements(userItineraries.getNumberOfElements())
+                .build();
     }
 }

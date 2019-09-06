@@ -14,8 +14,11 @@ import javax.ws.rs.Produces;
 @RequestMapping("/api/itinerary")
 public class ItineraryRestController {
 
-    @Autowired
     private IItineraryService service;
+
+    public ItineraryRestController(@Autowired IItineraryService service) {
+        this.service = service;
+    }
 
     @Produces(MediaType.APPLICATION_JSON_VALUE)
     @GetMapping("/{page}/{pageSize}")
@@ -55,6 +58,16 @@ public class ItineraryRestController {
             @RequestBody Itinerary itinerary
     ) {
         return service.update(itinerary);
+    }
+
+    @Produces(MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping("/by-user/{id}/{page}/{pageSize}")
+    public Page<Itinerary> findByUserID(
+            @PathVariable("id") String userID,
+            @PathVariable("page") Integer pageNumber,
+            @PathVariable("pageSize") Integer pageSize
+    ) {
+        return service.findByUserID(userID, pageNumber, pageSize);
     }
 
 }

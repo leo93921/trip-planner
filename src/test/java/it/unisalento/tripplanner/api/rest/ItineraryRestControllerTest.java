@@ -6,13 +6,13 @@ import it.unisalento.tripplanner.dto.TripStop;
 import it.unisalento.tripplanner.exception.ItineraryNotFoundException;
 import it.unisalento.tripplanner.iservice.IItineraryService;
 import it.unisalento.tripplanner.test.utils.TestUtils;
+import it.unisalento.tripplanner.utils.PageBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -40,22 +40,18 @@ public class ItineraryRestControllerTest {
     private ArgumentCaptor<Itinerary> capturedItineraries;
 
     private MockMvc mockMvc;
+    private PageBuilder<Itinerary> builder;
 
     @Before
     public void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+        this.builder = new PageBuilder<>();
     }
 
     @Test
     public void shouldFindAll() throws Exception {
-        List<Itinerary> mockedList = new ArrayList<>();
-        Itinerary itinerary = new Itinerary();
-        itinerary.setId("_id");
-        itinerary.setDescription("_description");
-        mockedList.add(itinerary);
-        Page<Itinerary> p = new PageImpl<>(mockedList, PageRequest.of(0,20), 1);
         when(service.findAll(ArgumentMatchers.any(Integer.class), ArgumentMatchers.any(Integer.class)))
-                .thenReturn(p);
+                .thenReturn(getItineraryPage());
 
         mockMvc.perform(get("/api/itinerary/{page}/{size}",0, 20))
                 .andExpect(status().isOk())
@@ -67,6 +63,19 @@ public class ItineraryRestControllerTest {
 
         verify(service, times(1)).findAll(0, 20);
         verifyNoMoreInteractions(service);
+    }
+
+    private Page<Itinerary> getItineraryPage() {
+        List<Itinerary> mockedList = new ArrayList<>();
+        Itinerary itinerary = new Itinerary();
+        itinerary.setId("_id");
+        itinerary.setDescription("_description");
+        mockedList.add(itinerary);
+        return builder
+                .setElements(mockedList)
+                .setPage(PageRequest.of(0,20))
+                .setTotalElements(1)
+                .build();
     }
 
     @Test
@@ -207,6 +216,25 @@ public class ItineraryRestControllerTest {
                 .andExpect(status().isNotFound());
 
         verify(service, times(1)).findByID("_id");
+        verifyNoMoreInteractions(service);
+    }
+
+    @Test
+    public void shouldFindUserItineraries() throws Exception {
+        when(service.findByUserID(anyString(), anyInt(), anyInt()))
+                .thenReturn(getItineraryPage());
+
+        mockMvc
+                .perform(get("/api/itinerary/by-user/{id}/{page}/{size}", "userId", 0, 20))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                .andExpect(jsonPath("$.content", hasSize(1)))
+                .andExpect(jsonPath("$.content[0].id", is("_id")))
+                .andExpect(jsonPath("$.totalElements", is(1)))
+                .andExpect(jsonPath("$.totalPages", is(1)))
+                .andExpect(jsonPath("$.last", is(true)));
+
+        verify(service, times(1)).findByUserID("userId", 0, 20);
         verifyNoMoreInteractions(service);
     }
 
