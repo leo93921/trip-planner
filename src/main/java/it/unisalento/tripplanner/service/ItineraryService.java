@@ -70,6 +70,7 @@ public class ItineraryService implements IItineraryService {
     @Override @Transactional
     public Itinerary save(Itinerary itinerary) {
         ItineraryModel model = ItineraryConverter.INSTANCE.toModel(itinerary);
+        model.setCreationDate(new Date());
         ItineraryModel saved = repository.save(model);
         return ItineraryConverter.INSTANCE.toDto(saved);
     }
