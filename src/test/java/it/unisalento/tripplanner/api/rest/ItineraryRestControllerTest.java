@@ -47,7 +47,7 @@ public class ItineraryRestControllerTest {
     }
 
     @Test
-    public void testFindAll() throws Exception {
+    public void shouldFindAll() throws Exception {
         List<Itinerary> mockedList = new ArrayList<>();
         Itinerary itinerary = new Itinerary();
         itinerary.setId("_id");
@@ -70,7 +70,7 @@ public class ItineraryRestControllerTest {
     }
 
     @Test
-    public void testSave() throws Exception {
+    public void shouldSave() throws Exception {
         Itinerary dto = createDto();
 
         when(service.save(ArgumentMatchers.any(Itinerary.class))).thenReturn(dto);
@@ -97,7 +97,7 @@ public class ItineraryRestControllerTest {
     }
 
     @Test
-    public void testDeleteOK() throws Exception {
+    public void shouldDelete() throws Exception {
         when(service.deleteByID(anyString())).thenReturn(true);
 
         mockMvc.perform(delete("/api/itinerary/{id}", "_id"))
@@ -108,7 +108,7 @@ public class ItineraryRestControllerTest {
     }
 
     @Test
-    public void testDelete404() throws Exception {
+    public void shouldNotDeleteNotFoundItinerary() throws Exception {
         when(service.deleteByID(anyString())).thenThrow(ItineraryNotFoundException.class);
 
         mockMvc.perform(delete("/api/itinerary/{id}", "_id"))
@@ -119,7 +119,7 @@ public class ItineraryRestControllerTest {
     }
 
     @Test
-    public void updateOK() throws Exception {
+    public void shouldUpdate() throws Exception {
         Itinerary dto = createDto();
 
         when(service.update(any())).thenReturn(dto);
@@ -146,7 +146,7 @@ public class ItineraryRestControllerTest {
     }
 
     @Test
-    public void update404() throws Exception {
+    public void shouldNotUpdateNotFoundItinerary() throws Exception {
         when(service.update(any())).thenThrow(ItineraryNotFoundException.class);
 
         mockMvc.perform(put("/api/itinerary")

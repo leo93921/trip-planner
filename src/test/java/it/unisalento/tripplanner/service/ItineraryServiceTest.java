@@ -33,7 +33,7 @@ public class ItineraryServiceTest {
     private ItineraryService service;
 
     @Test
-    public void findAll() {
+    public void shouldFindAllItineraries() {
         List<ItineraryModel> mockedList = new ArrayList<>();
         ItineraryModel itinerary = new ItineraryModel();
         itinerary.setId("_id");
@@ -49,7 +49,7 @@ public class ItineraryServiceTest {
     }
 
     @Test
-    public void deleteOK() {
+    public void shouldDeleteItinerary() {
         doNothing().when(repository).delete(any());
         when(repository.findById(anyString())).thenReturn(Optional.of(new ItineraryModel()));
         boolean result = service.deleteByID("_id");
@@ -57,13 +57,13 @@ public class ItineraryServiceTest {
     }
 
     @Test(expected = ItineraryNotFoundException.class)
-    public void deleteNotFound() {
+    public void shouldThrowExceptionForNotFoundItinerary() {
         when(repository.findById(anyString())).thenReturn(Optional.empty());
         service.deleteByID("_id");
     }
 
     @Test
-    public void updateOK() {
+    public void shouldUpdateItinerary() {
         ItineraryModel itinerary = new ItineraryModel();
         itinerary.setId("_id");
         itinerary.setDescription("_description");
@@ -80,7 +80,7 @@ public class ItineraryServiceTest {
     }
 
     @Test(expected = ItineraryNotFoundException.class)
-    public void updateNotFound() {
+    public void shouldThrowExceptionForNotUpdating() {
         when(repository.findById(any())).thenReturn(Optional.empty());
         service.update(new Itinerary());
     }
