@@ -9,6 +9,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -22,8 +24,7 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ItineraryServiceTest {
@@ -33,6 +34,8 @@ public class ItineraryServiceTest {
     @InjectMocks
     private ItineraryService service;
     private PageBuilder<ItineraryModel> builder;
+    @Captor
+    private ArgumentCaptor<ItineraryModel> itinerariesCaptor;
 
     @Before
     public void setUp() {
@@ -70,11 +73,15 @@ public class ItineraryServiceTest {
     }
 
     @Test
-    public void shouldDeleteItinerary() {
-        doNothing().when(repository).delete(any());
+    public void shouldSoftDeleteItinerary() {
+        when(repository.save(any())).thenReturn(new ItineraryModel());
         when(repository.findById(anyString())).thenReturn(Optional.of(new ItineraryModel()));
         boolean result = service.deleteByID("_id");
         Assert.assertTrue(result);
+
+        verify(repository, times(1)).findById("_id");
+        verify(repository, times(1)).save(itinerariesCaptor.capture());
+        verifyNoMoreInteractions(repository);
     }
 
     @Test(expected = ItineraryNotFoundException.class)

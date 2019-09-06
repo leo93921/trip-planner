@@ -77,7 +77,7 @@ public class ItineraryService implements IItineraryService {
 
 
     /**
-     * Delete an Itinerary by ID
+     * Soft delete an Itinerary by ID
      * @param id The resource ID
      * @return True if ok
      * @throws ItineraryNotFoundException if the Itinerary with given ID doesn't exist
@@ -86,7 +86,8 @@ public class ItineraryService implements IItineraryService {
     public boolean deleteByID(String id) throws ItineraryNotFoundException {
         Optional<ItineraryModel> optional = repository.findById(id);
         ItineraryModel foundModel = optional.orElseThrow(ItineraryNotFoundException::new);
-        repository.delete(foundModel);
+        foundModel.setDeleteDate(new Date());
+        repository.save(foundModel);
         return true;
     }
 
