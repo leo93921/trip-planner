@@ -5,7 +5,7 @@ import it.unisalento.tripplanner.model.TripStopModel;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(uses = RefTypeConverter.class)
+@Mapper(uses = {RefTypeConverter.class, LocationConverter.class})
 public abstract class TripStopConverter {
 
     static TripStopConverter INSTANCE = Mappers.getMapper(TripStopConverter.class);

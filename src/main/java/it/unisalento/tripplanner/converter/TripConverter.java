@@ -5,7 +5,10 @@ import it.unisalento.tripplanner.model.TripModel;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(uses = DayBagConverter.class)
+@Mapper(uses = {
+        DayBagConverter.class,
+        LocationConverter.class,
+        DayBagConverter.class})
 public interface TripConverter {
 
     TripConverter INSTANCE = Mappers.getMapper(TripConverter.class);

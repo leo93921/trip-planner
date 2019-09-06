@@ -5,7 +5,7 @@ import it.unisalento.tripplanner.model.ItineraryModel;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(uses = TripStopConverter.class)
+@Mapper(uses = {TripStopConverter.class, LocationConverter.class})
 public interface ItineraryConverter {
 
     ItineraryConverter INSTANCE = Mappers.getMapper(ItineraryConverter.class);
