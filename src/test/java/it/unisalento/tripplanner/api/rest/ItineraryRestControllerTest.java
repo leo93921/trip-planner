@@ -160,6 +160,7 @@ public class ItineraryRestControllerTest {
     private Itinerary createDto() {
         Itinerary dto = new Itinerary();
         dto.setDescription("_description");
+        dto.setId("_id");
 
         List<TripStop> stops = new ArrayList<>();
         TripStop stop = new TripStop();
@@ -173,6 +174,40 @@ public class ItineraryRestControllerTest {
         stops.add(stop);
         dto.setStops(stops);
         return dto;
+    }
+
+    @Test
+    public void shouldFindItinerary() throws Exception {
+        when(service.findByID(anyString())).thenReturn(createDto());
+
+        mockMvc.perform(get("/api/itinerary/{id}", "_id"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                .andExpect(jsonPath("$.id", is("_id")))
+                .andExpect(jsonPath("$.stops", hasSize(1)))
+                .andExpect(jsonPath("$.stops[0].id", is("_id")))
+                .andExpect(jsonPath("$.stops[0].refId", is("ref_id")))
+                .andExpect(jsonPath("$.stops[0].refType", is("TYPE_EVENT")))
+                .andExpect(jsonPath("$.stops[0].visitOrder", is(2)))
+                .andExpect(jsonPath("$.stops[0].warningPresent", is(true)))
+                .andExpect(jsonPath("$.stops[0].warningMessages", hasSize(2)))
+                .andExpect(jsonPath("$.stops[0].warningMessages[0]", is("w_m_1")))
+                .andExpect(jsonPath("$.stops[0].warningMessages[1]", is("w_m_2")))
+                .andExpect(jsonPath("$.stops[0].warningMessages[0]", is("w_m_1")));
+
+        verify(service, times(1)).findByID("_id");
+        verifyNoMoreInteractions(service);
+    }
+
+    @Test
+    public void shouldNotFindItinerary() throws Exception {
+        when(service.findByID(anyString())).thenThrow(ItineraryNotFoundException.class);
+
+        mockMvc.perform(get("/api/itinerary/{id}", "_id"))
+                .andExpect(status().isNotFound());
+
+        verify(service, times(1)).findByID("_id");
+        verifyNoMoreInteractions(service);
     }
 
 }

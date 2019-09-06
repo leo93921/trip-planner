@@ -8,4 +8,5 @@ public interface IItineraryService {
     Itinerary save(Itinerary itinerary);
     boolean deleteByID(String id);
     Itinerary update(Itinerary itinerary);
+    Itinerary findByID(String id);
 }

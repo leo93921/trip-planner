@@ -7,7 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import javax.print.attribute.standard.Media;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 
@@ -25,6 +24,12 @@ public class ItineraryRestController {
             @PathVariable("pageSize") Integer pageSize
     ) {
         return service.findAll(pageNumber, pageSize);
+    }
+
+    @Produces(MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping("/{id}")
+    public Itinerary findById(@PathVariable("id") String id) {
+        return service.findByID(id);
     }
 
     @Consumes(MediaType.APPLICATION_JSON_VALUE)

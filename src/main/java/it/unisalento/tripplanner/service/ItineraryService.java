@@ -41,6 +41,19 @@ public class ItineraryService implements IItineraryService {
     }
 
     /**
+     * Find an Itinerary by ID
+     * @param id The ID of the Itinerary
+     * @return Itinerary found
+     * @throws ItineraryNotFoundException if the Itinerary with given ID doesn't exist
+     */
+    @Override @Transactional(readOnly = true)
+    public Itinerary findByID(String id) throws ItineraryNotFoundException {
+        Optional<ItineraryModel> model = repository.findById(id);
+        ItineraryModel found = model.orElseThrow(ItineraryNotFoundException::new);
+        return ItineraryConverter.INSTANCE.toDto(found);
+    }
+
+    /**
      * Persist a new Itinerary
      * @param itinerary DTO to be saved
      * @return Saved DTO

@@ -2,7 +2,6 @@ package it.unisalento.tripplanner.service;
 
 import it.unisalento.tripplanner.dto.Itinerary;
 import it.unisalento.tripplanner.exception.ItineraryNotFoundException;
-import it.unisalento.tripplanner.iservice.IItineraryService;
 import it.unisalento.tripplanner.model.ItineraryModel;
 import it.unisalento.tripplanner.repository.ItineraryRepository;
 import org.junit.Assert;
@@ -84,5 +83,27 @@ public class ItineraryServiceTest {
     public void updateNotFound() {
         when(repository.findById(any())).thenReturn(Optional.empty());
         service.update(new Itinerary());
+    }
+
+    @Test
+    public void shouldFindItineraryByID() {
+        ItineraryModel itinerary = new ItineraryModel();
+        itinerary.setId("_id");
+        itinerary.setDescription("_description");
+
+        when(repository.findById("_id")).thenReturn(Optional.of(itinerary));
+
+        Itinerary found = service.findByID("_id");
+
+        Assert.assertNotNull(found);
+        Assert.assertEquals(itinerary.getId(), found.getId());
+        Assert.assertEquals(itinerary.getDescription(), found.getDescription());
+    }
+
+    @Test(expected = ItineraryNotFoundException.class)
+    public void shouldThrowExceptionForNotExistingItinerary(){
+        when(repository.findById(anyString())).thenReturn(Optional.empty());
+
+        service.findByID("_id");
     }
 }
