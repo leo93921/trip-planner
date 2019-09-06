@@ -3,7 +3,6 @@ package it.unisalento.tripplanner.api.rest;
 import it.unisalento.tripplanner.dto.Itinerary;
 import it.unisalento.tripplanner.dto.RefType;
 import it.unisalento.tripplanner.dto.TripStop;
-import it.unisalento.tripplanner.exception.ExceptionMessage;
 import it.unisalento.tripplanner.exception.ItineraryNotFoundException;
 import it.unisalento.tripplanner.iservice.IItineraryService;
 import it.unisalento.tripplanner.test.utils.TestUtils;
@@ -72,20 +71,7 @@ public class ItineraryRestControllerTest {
 
     @Test
     public void testSave() throws Exception {
-        Itinerary dto = new Itinerary();
-        dto.setDescription("_description");
-
-        List<TripStop> stops = new ArrayList<>();
-        TripStop stop = new TripStop();
-        stop.setId("_id");
-        stop.setRefId("ref_id");
-        stop.setRefType(RefType.TYPE_EVENT);
-        stop.setVisitOrder(2);
-        stop.setVisitTime(LocalTime.of(12, 42));
-        stop.setWarningPresent(true);
-        stop.setWarningMessages(List.of("w_m_1", "w_m_2"));
-        stops.add(stop);
-        dto.setStops(stops);
+        Itinerary dto = createDto();
 
         when(service.save(ArgumentMatchers.any(Itinerary.class))).thenReturn(dto);
 
@@ -130,6 +116,63 @@ public class ItineraryRestControllerTest {
 
         verify(service, times(1)).deleteByID("_id");
         verifyNoMoreInteractions(service);
+    }
+
+    @Test
+    public void updateOK() throws Exception {
+        Itinerary dto = createDto();
+
+        when(service.update(any())).thenReturn(dto);
+
+        Itinerary toSend = new Itinerary();
+        mockMvc.perform(put("/api/itinerary")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(TestUtils.toJson(toSend)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.description", is("_description")))
+                .andExpect(jsonPath("$.stops", hasSize(1)))
+                .andExpect(jsonPath("$.stops[0].id", is("_id")))
+                .andExpect(jsonPath("$.stops[0].refId", is("ref_id")))
+                .andExpect(jsonPath("$.stops[0].refType", is("TYPE_EVENT")))
+                .andExpect(jsonPath("$.stops[0].visitOrder", is(2)))
+                .andExpect(jsonPath("$.stops[0].warningPresent", is(true)))
+                .andExpect(jsonPath("$.stops[0].warningMessages", hasSize(2)))
+                .andExpect(jsonPath("$.stops[0].warningMessages[0]", is("w_m_1")))
+                .andExpect(jsonPath("$.stops[0].warningMessages[1]", is("w_m_2")))
+                .andExpect(jsonPath("$.stops[0].warningMessages[0]", is("w_m_1")));
+
+        verify(service, times(1)).update(capturedItineraries.capture());
+        verifyNoMoreInteractions(service);
+    }
+
+    @Test
+    public void update404() throws Exception {
+        when(service.update(any())).thenThrow(ItineraryNotFoundException.class);
+
+        mockMvc.perform(put("/api/itinerary")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(TestUtils.toJson(new Itinerary())))
+                .andExpect(status().isNotFound());
+        verify(service, times(1)).update(capturedItineraries.capture());
+        verifyNoMoreInteractions(service);
+    }
+
+    private Itinerary createDto() {
+        Itinerary dto = new Itinerary();
+        dto.setDescription("_description");
+
+        List<TripStop> stops = new ArrayList<>();
+        TripStop stop = new TripStop();
+        stop.setId("_id");
+        stop.setRefId("ref_id");
+        stop.setRefType(RefType.TYPE_EVENT);
+        stop.setVisitOrder(2);
+        stop.setVisitTime(LocalTime.of(12, 42));
+        stop.setWarningPresent(true);
+        stop.setWarningMessages(List.of("w_m_1", "w_m_2"));
+        stops.add(stop);
+        dto.setStops(stops);
+        return dto;
     }
 
 }

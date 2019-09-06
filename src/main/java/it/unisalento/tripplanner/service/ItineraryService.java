@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,5 +65,32 @@ public class ItineraryService implements IItineraryService {
         ItineraryModel foundModel = optional.orElseThrow(ItineraryNotFoundException::new);
         repository.delete(foundModel);
         return true;
+    }
+
+    /**
+     * Update an existing Itinerary
+     * @param itinerary The new itinerary
+     * @return the saved Itinerary
+     */
+    @Override
+    public Itinerary update(Itinerary itinerary) {
+        Optional<ItineraryModel> model = repository.findById(itinerary.getId());
+
+        ItineraryModel saved = model.orElseThrow(ItineraryNotFoundException::new);
+        ItineraryModel received = ItineraryConverter.INSTANCE.toModel(itinerary);
+
+        // update properties
+        saved.setStops(received.getStops());
+        saved.setDescription(received.getDescription());
+        saved.setBudgetLevel(received.getBudgetLevel());
+        saved.setStartPoint(received.getStartPoint());
+        saved.setEndPoint(received.getEndPoint());
+        saved.setMaxBudget(received.getMaxBudget());
+        saved.setTitle(received.getTitle());
+        saved.setUserId(received.getUserId());
+        saved.setUpdateDate(new Date());
+
+        saved = repository.save(saved);
+        return ItineraryConverter.INSTANCE.toDto(saved);
     }
 }

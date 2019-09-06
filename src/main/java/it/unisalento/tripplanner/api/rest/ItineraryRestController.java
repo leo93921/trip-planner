@@ -43,4 +43,13 @@ public class ItineraryRestController {
         return service.deleteByID(id);
     }
 
+    @Consumes(MediaType.APPLICATION_JSON_VALUE)
+    @Produces(MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping
+    public Itinerary update(
+            @RequestBody Itinerary itinerary
+    ) {
+        return service.update(itinerary);
+    }
+
 }

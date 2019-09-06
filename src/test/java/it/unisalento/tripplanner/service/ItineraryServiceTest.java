@@ -62,4 +62,27 @@ public class ItineraryServiceTest {
         when(repository.findById(anyString())).thenReturn(Optional.empty());
         service.deleteByID("_id");
     }
+
+    @Test
+    public void updateOK() {
+        ItineraryModel itinerary = new ItineraryModel();
+        itinerary.setId("_id");
+        itinerary.setDescription("_description");
+
+        when(repository.findById(anyString())).thenReturn(Optional.of(new ItineraryModel()));
+        when(repository.save(any())).thenReturn(itinerary);
+
+        Itinerary toSend = new Itinerary();
+        toSend.setId("abs");
+        Itinerary updated = service.update(toSend);
+
+        Assert.assertEquals(itinerary.getId(), updated.getId());
+        Assert.assertEquals(itinerary.getDescription(), updated.getDescription());
+    }
+
+    @Test(expected = ItineraryNotFoundException.class)
+    public void updateNotFound() {
+        when(repository.findById(any())).thenReturn(Optional.empty());
+        service.update(new Itinerary());
+    }
 }
