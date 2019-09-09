@@ -40,6 +40,7 @@ public class TripService implements ITripService {
         return TripConverter.INSTANCE.toDto(saved);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<Trip> findAll(Integer pageNumber, Integer pageSize) {
         Pageable page = PageRequest.of(pageNumber, pageSize);
