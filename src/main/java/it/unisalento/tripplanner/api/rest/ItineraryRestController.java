@@ -16,7 +16,9 @@ public class ItineraryRestController {
 
     private IItineraryService service;
 
-    public ItineraryRestController(@Autowired IItineraryService service) {
+    public ItineraryRestController(
+            @Autowired IItineraryService service
+    ) {
         this.service = service;
     }
 
