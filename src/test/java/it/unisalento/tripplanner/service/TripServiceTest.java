@@ -20,7 +20,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class TripSeriveTest {
+public class TripServiceTest {
 
     @Mock TripRepository repository;
     @InjectMocks TripService service;
