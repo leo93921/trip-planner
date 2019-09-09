@@ -14,7 +14,7 @@ public class PageBuilder<T> {
 
     private List<T> elements = new ArrayList<>();
     private Pageable pageRequest;
-    private int totalElements;
+    private long totalElements;
 
     public PageBuilder() {
     }
@@ -29,7 +29,7 @@ public class PageBuilder<T> {
         return this;
     }
 
-    public PageBuilder<T> setTotalElements(int numberOfElements) {
+    public PageBuilder<T> setTotalElements(long numberOfElements) {
         this.totalElements = numberOfElements;
         return this;
     }
