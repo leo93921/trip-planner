@@ -3,11 +3,9 @@ package it.unisalento.tripplanner.api.rest;
 import it.unisalento.tripplanner.dto.Trip;
 import it.unisalento.tripplanner.iservice.ITripService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -31,5 +29,13 @@ public class TripRestController {
         return service.saveTrip(trip);
     }
 
+    @Produces(MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @GetMapping("/{page}/{size}")
+    public Page<Trip> findAll(
+            @PathVariable("page") Integer pageNumber,
+            @PathVariable("size") Integer pageSize
+    ) {
+        return service.findAll(pageNumber, pageSize);
+    }
 
 }
