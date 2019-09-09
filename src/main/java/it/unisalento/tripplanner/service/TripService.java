@@ -2,6 +2,7 @@ package it.unisalento.tripplanner.service;
 
 import it.unisalento.tripplanner.converter.TripConverter;
 import it.unisalento.tripplanner.dto.Trip;
+import it.unisalento.tripplanner.exception.TripNotFoundException;
 import it.unisalento.tripplanner.iservice.ITripService;
 import it.unisalento.tripplanner.model.TripModel;
 import it.unisalento.tripplanner.repository.TripRepository;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TripService implements ITripService {
@@ -58,5 +60,19 @@ public class TripService implements ITripService {
                 .setPage(modelPage.getPageable())
                 .build();
 
+    }
+
+    @Transactional
+    @Override
+    public Trip updateTrip(Trip trip) {
+        Optional<TripModel> optional = repository.findById(trip.getId());
+        TripModel found = optional.orElseThrow(TripNotFoundException::new);
+        TripModel model = TripConverter.INSTANCE.toModel(trip);
+        model.setCreationDate(found.getCreationDate());
+        model.setUpdateDate(new Date());
+        model.setDeleteDate(found.getDeleteDate());
+        model.setUserId(found.getUserId());
+        TripModel saved = repository.save(model);
+        return TripConverter.INSTANCE.toDto(saved);
     }
 }

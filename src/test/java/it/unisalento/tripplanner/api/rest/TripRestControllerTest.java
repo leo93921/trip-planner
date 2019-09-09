@@ -1,6 +1,7 @@
 package it.unisalento.tripplanner.api.rest;
 
 import it.unisalento.tripplanner.dto.Trip;
+import it.unisalento.tripplanner.exception.TripNotFoundException;
 import it.unisalento.tripplanner.iservice.ITripService;
 import it.unisalento.tripplanner.test.utils.TestUtils;
 import it.unisalento.tripplanner.utils.PageBuilder;
@@ -29,8 +30,7 @@ import java.util.List;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -104,6 +104,47 @@ public class TripRestControllerTest {
             Assert.fail();
         }
     }
+
+    @Test
+    public void shouldUpdateTrips() throws Exception {
+        when(service.updateTrip(any())).thenReturn(getTrip());
+
+        mockMvc.perform(
+                put("/api/trip")
+                        .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                        .content(TestUtils.toJson(new Trip()))
+        )
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                .andExpect(jsonPath("$.id", is("_id")))
+                .andExpect(jsonPath("$.title", is("_title")))
+                .andExpect(jsonPath("$.maxBudget", is(15.76)))
+                .andExpect(jsonPath("$.budgetLevel", is(4)))
+                .andExpect(jsonPath("$.userId", is("user_id")))
+                .andExpect(jsonPath("$.creationDate", is(1547075189143L)))
+                .andExpect(jsonPath("$.updateDate", is(1547075189143L)))
+                .andExpect(jsonPath("$.deleteDate", is(1547075189143L)));
+
+        verify(service, times(1)).updateTrip(tripCaptor.capture());
+        verifyNoMoreInteractions(service);
+    }
+
+    @Test
+    public void shouldNotUpdateTripWithoutID() throws Exception {
+        when(service.updateTrip(any())).thenThrow(new TripNotFoundException());
+
+        mockMvc.perform(
+                put("/api/trip")
+                        .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                        .content(TestUtils.toJson(new Trip()))
+        )
+                .andExpect(status().isNotFound());
+
+        verify(service, times(1)).updateTrip(tripCaptor.capture());
+        verifyNoMoreInteractions(service);
+    }
+
+
 
     private Trip getTrip() throws ParseException {
         Trip trip = new Trip();

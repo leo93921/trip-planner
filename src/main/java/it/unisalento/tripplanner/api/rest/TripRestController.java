@@ -38,4 +38,13 @@ public class TripRestController {
         return service.findAll(pageNumber, pageSize);
     }
 
+    @Produces(MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @Consumes(MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PutMapping
+    public Trip updateTrip(
+            @RequestBody Trip trip
+    ) {
+        return service.updateTrip(trip);
+    }
+
 }

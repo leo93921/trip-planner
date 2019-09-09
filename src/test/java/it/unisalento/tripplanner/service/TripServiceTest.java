@@ -1,6 +1,7 @@
 package it.unisalento.tripplanner.service;
 
 import it.unisalento.tripplanner.dto.Trip;
+import it.unisalento.tripplanner.exception.TripNotFoundException;
 import it.unisalento.tripplanner.model.TripModel;
 import it.unisalento.tripplanner.repository.TripRepository;
 import it.unisalento.tripplanner.utils.PageBuilder;
@@ -22,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -86,6 +88,36 @@ public class TripServiceTest {
 
         verify(repository, times(1)).findAll(pageCaptor.capture());
         verifyNoMoreInteractions(repository);
+    }
+
+    @Test
+    public void shouldUpdateTrips() throws ParseException {
+        when(repository.findById(anyString())).thenReturn(Optional.of(getModel()));
+        when(repository.save(any())).thenReturn(getModel());
+
+        Trip toUpdate = new Trip();
+        toUpdate.setId("id");
+        Trip saved = service.updateTrip(toUpdate);
+
+        Date expectedDate = formatter.parse("2019-09-10T12:06:29.143");
+
+        Assert.assertEquals("_id", saved.getId());
+        Assert.assertEquals("_title", saved.getTitle());
+        Assert.assertEquals(15.76f, saved.getMaxBudget(), 1e-7);
+        Assert.assertEquals(4, saved.getBudgetLevel(), 1);
+        Assert.assertEquals(expectedDate, saved.getCreationDate());
+        Assert.assertEquals(expectedDate, saved.getUpdateDate());
+        Assert.assertEquals(expectedDate, saved.getDeleteDate());
+        Assert.assertEquals("user_id", saved.getUserId());
+
+        verify(repository, times(1)).findById("id");
+        verify(repository, times(1)).save(modelsCaptor.capture());
+        verifyNoMoreInteractions(repository);
+    }
+
+    @Test(expected = TripNotFoundException.class)
+    public void shouldNotUpdateTripsWithoutID() {
+        service.updateTrip(new Trip());
     }
 
     private TripModel getModel() throws ParseException {
