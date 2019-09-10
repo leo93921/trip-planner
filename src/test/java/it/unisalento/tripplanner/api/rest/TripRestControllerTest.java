@@ -174,7 +174,33 @@ public class TripRestControllerTest {
         ).andExpect(status().isNotFound());
         verify(service, times(1)).findByID("_id");
         verifyNoMoreInteractions(service);
+    }
 
+    @Test
+    public void shouldSoftDeleteTrips() throws Exception {
+        when(service.deleteByID(anyString())).thenReturn(true);
+
+        mockMvc.perform(
+                delete("/api/trip/{id}", "id")
+        )
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                .andExpect(jsonPath("$", is(true)));
+
+        verify(service, times(1)).deleteByID(any());
+        verifyNoMoreInteractions(service);
+    }
+
+    @Test
+    public void shouldNotDeleteNotFoundTrips() throws Exception {
+        when(service.deleteByID(anyString())).thenThrow(TripNotFoundException.class);
+
+        mockMvc.perform(
+                delete("/api/trip/{id}", "id")
+        ).andExpect(status().isNotFound());
+
+        verify(service, times(1)).deleteByID(any());
+        verifyNoMoreInteractions(service);
     }
 
     private Trip getTrip() throws ParseException {

@@ -142,7 +142,30 @@ public class TripServiceTest {
     public void shouldNotFindATrip() {
         when(repository.findById(anyString())).thenReturn(Optional.empty());
 
-        Trip byID = service.findByID("");
+        service.findByID("");
+    }
+
+    @Test
+    public void shouldSoftDeleteTrips() throws ParseException {
+        when(repository.findById(anyString())).thenReturn(Optional.of(getModel()));
+        when(repository.save(any())).thenReturn(getModel());
+
+        boolean results = service.deleteByID("_id");
+
+        Assert.assertTrue(results);
+        verify(repository, times(1)).findById("_id");
+        verify(repository, times(1)).save(modelsCaptor.capture());
+        verifyNoMoreInteractions(repository);
+    }
+
+    @Test(expected = TripNotFoundException.class)
+    public void shouldNotUpdateNotFoundTrips() {
+        when(repository.findById("")).thenThrow(TripNotFoundException.class);
+
+        service.deleteByID("");
+
+        verify(repository, times(1)).findById("");
+        verifyNoMoreInteractions(repository);
     }
 
     private TripModel getModel() throws ParseException {

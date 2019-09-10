@@ -55,4 +55,12 @@ public class TripRestController {
         return service.findByID(id);
     }
 
+    @Produces(MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @DeleteMapping("/{tripID}")
+    public boolean deleteByID(
+            @PathVariable("tripID") String id
+    ) {
+        return service.deleteByID(id);
+    }
+
 }

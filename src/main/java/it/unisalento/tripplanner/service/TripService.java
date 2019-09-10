@@ -83,4 +83,14 @@ public class TripService implements ITripService {
         TripModel found = optional.orElseThrow(TripNotFoundException::new);
         return TripConverter.INSTANCE.toDto(found);
     }
+
+    @Transactional
+    @Override
+    public boolean deleteByID(String id) {
+        Optional<TripModel> optional = repository.findById(id);
+        TripModel found = optional.orElseThrow(TripNotFoundException::new);
+        found.setDeleteDate(new Date());
+        repository.save(found);
+        return true;
+    }
 }
