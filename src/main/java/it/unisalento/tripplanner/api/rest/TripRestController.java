@@ -47,4 +47,12 @@ public class TripRestController {
         return service.updateTrip(trip);
     }
 
+    @Produces(MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @GetMapping("/{tripID}")
+    public Trip findByID(
+            @PathVariable("tripID") String id
+    ) {
+        return service.findByID(id);
+    }
+
 }

@@ -38,13 +38,16 @@ public class TripServiceTest {
     private SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd'T'hh:mm:ss.SSS");
     private PageBuilder<TripModel> pageBuilder;
 
+    private Date expectedDate;
+
     @Before
-    public void setUp() {
+    public void setUp() throws ParseException {
         this.pageBuilder = new PageBuilder<>();
         this.service = new TripService(
                 repository,
                 new PageBuilder<>()
         );
+        this.expectedDate = formatter.parse("2019-09-10T12:06:29.143");
     }
 
     @Test
@@ -72,8 +75,6 @@ public class TripServiceTest {
     public void shouldFindAllTrips() throws ParseException {
         when(repository.findAll(any(Pageable.class))).thenReturn(getPage());
 
-        Date expectedDate = formatter.parse("2019-09-10T12:06:29.143");
-
         Page<Trip> tripPage = service.findAll(0, 25);
         Assert.assertEquals(1, tripPage.getContent().size());
         Assert.assertTrue(tripPage.isLast());
@@ -99,8 +100,6 @@ public class TripServiceTest {
         toUpdate.setId("id");
         Trip saved = service.updateTrip(toUpdate);
 
-        Date expectedDate = formatter.parse("2019-09-10T12:06:29.143");
-
         Assert.assertEquals("_id", saved.getId());
         Assert.assertEquals("_title", saved.getTitle());
         Assert.assertEquals(15.76f, saved.getMaxBudget(), 1e-7);
@@ -118,6 +117,32 @@ public class TripServiceTest {
     @Test(expected = TripNotFoundException.class)
     public void shouldNotUpdateTripsWithoutID() {
         service.updateTrip(new Trip());
+    }
+
+    @Test
+    public void shouldFindATrip() throws ParseException {
+        when(repository.findById(anyString())).thenReturn(Optional.of(getModel()));
+
+        Trip trip = service.findByID("_id");
+
+        Assert.assertEquals("_id", trip.getId());
+        Assert.assertEquals("_title", trip.getTitle());
+        Assert.assertEquals(15.76f, trip.getMaxBudget(), 1e-7);
+        Assert.assertEquals(4, trip.getBudgetLevel(), 1);
+        Assert.assertEquals(expectedDate, trip.getCreationDate());
+        Assert.assertEquals(expectedDate, trip.getUpdateDate());
+        Assert.assertEquals(expectedDate, trip.getDeleteDate());
+        Assert.assertEquals("user_id", trip.getUserId());
+
+        verify(repository, times(1)).findById("_id");
+        verifyNoMoreInteractions(repository);
+    }
+
+    @Test(expected = TripNotFoundException.class)
+    public void shouldNotFindATrip() {
+        when(repository.findById(anyString())).thenReturn(Optional.empty());
+
+        Trip byID = service.findByID("");
     }
 
     private TripModel getModel() throws ParseException {

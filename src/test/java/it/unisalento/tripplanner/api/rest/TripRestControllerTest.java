@@ -144,7 +144,38 @@ public class TripRestControllerTest {
         verifyNoMoreInteractions(service);
     }
 
+    @Test
+    public void shouldFindATrip() throws Exception {
+        when(service.findByID(anyString())).thenReturn(getTrip());
 
+        mockMvc.perform(
+                get("/api/trip/{id}", "_id")
+        )
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                .andExpect(jsonPath("$.id", is("_id")))
+                .andExpect(jsonPath("$.title", is("_title")))
+                .andExpect(jsonPath("$.maxBudget", is(15.76)))
+                .andExpect(jsonPath("$.budgetLevel", is(4)))
+                .andExpect(jsonPath("$.userId", is("user_id")))
+                .andExpect(jsonPath("$.creationDate", is(1547075189143L)))
+                .andExpect(jsonPath("$.updateDate", is(1547075189143L)))
+                .andExpect(jsonPath("$.deleteDate", is(1547075189143L)));
+
+        verify(service, times(1)).findByID("_id");
+        verifyNoMoreInteractions(service);
+    }
+
+    @Test
+    public void shouldNotFindATrip() throws Exception {
+        when(service.findByID(anyString())).thenThrow(TripNotFoundException.class);
+        mockMvc.perform(
+                get("/api/trip/{id}", "_id")
+        ).andExpect(status().isNotFound());
+        verify(service, times(1)).findByID("_id");
+        verifyNoMoreInteractions(service);
+
+    }
 
     private Trip getTrip() throws ParseException {
         Trip trip = new Trip();

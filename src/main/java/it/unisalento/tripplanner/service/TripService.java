@@ -75,4 +75,12 @@ public class TripService implements ITripService {
         TripModel saved = repository.save(model);
         return TripConverter.INSTANCE.toDto(saved);
     }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Trip findByID(String id) {
+        Optional<TripModel> optional = repository.findById(id);
+        TripModel found = optional.orElseThrow(TripNotFoundException::new);
+        return TripConverter.INSTANCE.toDto(found);
+    }
 }

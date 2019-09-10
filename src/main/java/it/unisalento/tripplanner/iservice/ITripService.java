@@ -7,4 +7,5 @@ public interface ITripService {
     Trip saveTrip(Trip trip);
     Page<Trip> findAll(Integer pageNumber, Integer pageSize);
     Trip updateTrip(Trip trip);
+    Trip findByID(String id);
 }
