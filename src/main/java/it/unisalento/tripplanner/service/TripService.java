@@ -93,4 +93,22 @@ public class TripService implements ITripService {
         repository.save(found);
         return true;
     }
+
+    @Override
+    public Page<Trip> findByUserID(String userID, Integer pageNumber, Integer pageSize) {
+        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
+        Page<TripModel> page = repository.findByUserId(userID, pageRequest);
+
+        List<Trip> trips = new ArrayList<>();
+        for (TripModel model : page.getContent()) {
+            trips.add(TripConverter.INSTANCE.toDto(model));
+        }
+
+        return builder
+                .setElements(trips)
+                .setTotalElements(page.getTotalElements())
+                .setPage(page.getPageable())
+                .build();
+
+    }
 }

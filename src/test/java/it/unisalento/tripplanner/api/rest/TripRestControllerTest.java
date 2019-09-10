@@ -203,6 +203,29 @@ public class TripRestControllerTest {
         verifyNoMoreInteractions(service);
     }
 
+    @Test
+    public void shouldFindTripsByUserID() throws Exception {
+        when(service.findByUserID(anyString(), any(), any())).thenReturn(getPage());
+
+        mockMvc.perform(
+                get("/api/trip/by-user/{id}/{page}/{size}", "user_id", 0, 25)
+        )
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                .andExpect(jsonPath("$.content", hasSize(1)))
+                .andExpect(jsonPath("$.content[0].id", is("_id")))
+                .andExpect(jsonPath("$.content[0].title", is("_title")))
+                .andExpect(jsonPath("$.content[0].maxBudget", is(15.76)))
+                .andExpect(jsonPath("$.content[0].budgetLevel", is(4)))
+                .andExpect(jsonPath("$.content[0].userId", is("user_id")))
+                .andExpect(jsonPath("$.content[0].creationDate", is(1547075189143L)))
+                .andExpect(jsonPath("$.content[0].updateDate", is(1547075189143L)))
+                .andExpect(jsonPath("$.content[0].deleteDate", is(1547075189143L)));
+
+        verify(service, times(1)).findByUserID("user_id", 0, 25);
+        verifyNoMoreInteractions(service);
+    }
+
     private Trip getTrip() throws ParseException {
         Trip trip = new Trip();
         trip.setId("_id");

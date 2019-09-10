@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.print.attribute.standard.Media;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 
@@ -61,6 +62,16 @@ public class TripRestController {
             @PathVariable("tripID") String id
     ) {
         return service.deleteByID(id);
+    }
+
+    @Produces(MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @GetMapping("/by-user/{userID}/{page}/{size}")
+    public Page<Trip> findByUserID(
+            @PathVariable("userID") String userID,
+            @PathVariable("page") Integer pageNumber,
+            @PathVariable("size") Integer pageSize
+    ) {
+        return service.findByUserID(userID, pageNumber, pageSize);
     }
 
 }

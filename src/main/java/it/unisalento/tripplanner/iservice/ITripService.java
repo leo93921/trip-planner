@@ -9,4 +9,5 @@ public interface ITripService {
     Trip updateTrip(Trip trip);
     Trip findByID(String id);
     boolean deleteByID(String id);
+    Page<Trip> findByUserID(String userID, Integer pageNumber, Integer pageSize);
 }

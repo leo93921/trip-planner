@@ -168,6 +168,26 @@ public class TripServiceTest {
         verifyNoMoreInteractions(repository);
     }
 
+    @Test
+    public void shouldFindTripsByUserID() throws ParseException {
+        when(repository.findByUserId(anyString(), any())).thenReturn(getPage());
+
+        Page<Trip> tripPage = service.findByUserID("user_id", 0, 25);
+        Assert.assertEquals(1, tripPage.getContent().size());
+        Assert.assertTrue(tripPage.isLast());
+        Assert.assertEquals("_id", tripPage.getContent().get(0).getId());
+        Assert.assertEquals("_title", tripPage.getContent().get(0).getTitle());
+        Assert.assertEquals(15.76f, tripPage.getContent().get(0).getMaxBudget(), 1e-7);
+        Assert.assertEquals(4, tripPage.getContent().get(0).getBudgetLevel(), 1);
+        Assert.assertEquals(expectedDate, tripPage.getContent().get(0).getCreationDate());
+        Assert.assertEquals(expectedDate, tripPage.getContent().get(0).getUpdateDate());
+        Assert.assertEquals(expectedDate, tripPage.getContent().get(0).getDeleteDate());
+        Assert.assertEquals("user_id", tripPage.getContent().get(0).getUserId());
+
+        verify(repository, times(1)).findByUserId(eq("user_id"), pageCaptor.capture());
+        verifyNoMoreInteractions(repository);
+    }
+
     private TripModel getModel() throws ParseException {
         TripModel model = new TripModel();
         model.setId("_id");
